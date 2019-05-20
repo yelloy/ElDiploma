@@ -19,7 +19,6 @@ while 1:
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
-
     try:
         x,y,w,h = faces[0]
         #cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -28,8 +27,14 @@ while 1:
         roi_gray = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
 
         eyes = eye_cascade.detectMultiScale(roi_gray)
-        if eyes.ndim != 0:
-            ex, ey, ew, eh = eyes[0]
+        sortlist = (eyes[0][0], eyes[1][0])
+        if sortlist[0] > sortlist [1]:
+            eye = eyes[0]
+        else:
+            eye = eyes[1]
+        #print("eyes", sortlist)
+        try:
+            ex, ey, ew, eh = eye
             #cv2.rectangle(face_image, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
             if ew > 30 and eh > 30:
                 eye_image = img[ey + y:(ey + y + eh), ex + x:(ex + x + ew)]
@@ -42,7 +47,7 @@ while 1:
                 gray_roi = cv2.cvtColor(eye_image, cv2.COLOR_BGR2GRAY)
                 gray_roi = cv2.GaussianBlur(gray_roi, (7, 7), 0)
 
-                _, threshold = cv2.threshold(gray_roi, 80, 255, cv2.THRESH_BINARY_INV)
+                _, threshold = cv2.threshold(gray_roi, 30, 255, cv2.THRESH_BINARY_INV)
 
                 cv2.imshow('threshold', threshold)
 
@@ -86,6 +91,8 @@ while 1:
                         cv2.imwrite("eye_tracker_result.png", img)
                     break
 
+        except:
+            print("No eyes")
     except:
         print("No faces")
             #cv2.imshow('eye_img', eye_image)
