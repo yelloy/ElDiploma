@@ -45,9 +45,13 @@ while 1:
                 #### Обработаем изображение по цвету.
 
                 gray_roi = cv2.cvtColor(eye_image, cv2.COLOR_BGR2GRAY)
-                gray_roi = cv2.GaussianBlur(gray_roi, (7, 7), 0)
+                cv2.imshow('gray puple', gray_roi)
+                _, light_area = cv2.threshold(gray_roi, 50, 255, cv2.THRESH_BINARY_INV)
 
+                gray_roi = cv2.GaussianBlur(gray_roi, (7, 7), 0)
                 _, threshold = cv2.threshold(gray_roi, 30, 255, cv2.THRESH_BINARY_INV)
+
+                light_area = cv2.bitwise_not(light_area)
 
                 cv2.imshow('threshold', threshold)
 
@@ -79,8 +83,9 @@ while 1:
                         coord_y = int(moment['m10'] / moment['m00'])
 
                         if first_cycle_skipped:
-                            difference_x = old_x - coord_x
-                            difference_y = old_y - coord_y
+                            difference_x = ex + ew//2 - coord_x
+                            difference_y = ey + eh//2 - coord_y
+                            print(difference_x)
 
                         old_x = coord_x
                         old_y = coord_y
@@ -98,7 +103,9 @@ while 1:
             #cv2.imshow('eye_img', eye_image)
 
     cv2.rectangle(img, (5, img.shape[0] - 35), (img.shape[1]-5, img.shape[0]-5), (255, 255, 255), 5)
-    cv2.line(img, (img.shape[1]//2 + difference_x*5, img.shape[0]-35), (img.shape[1]//2 + difference_x*5, img.shape[1]-5), (255, 255, 255), 4)
+    cv2.line(img, (img.shape[1]//2 + difference_x*3, img.shape[0]-35), (img.shape[1]//2 + difference_x*3, img.shape[1]-5), (255, 255, 255), 4)
+
+    cv2.line(img, (img.shape[1]//2, img.shape[0]-35), (img.shape[1]//2, img.shape[1]-5), (0, 0, 255), 2)
 
     cv2.imshow('img', img)
     k = cv2.waitKey(30) & 0xff
